@@ -151,6 +151,7 @@
 #include "DailyTips.hpp"
 #include "CreatePresetsDialog.hpp"
 #include "FileArchiveDialog.hpp"
+#include "slic3r/GUI/AI/ChatConfigPanel.hpp"
 
 using boost::optional;
 namespace fs = boost::filesystem;
@@ -1125,9 +1126,22 @@ Sidebar::Sidebar(Plater *parent)
     p->object_layers->Hide();
     p->sizer_params->Add(p->object_layers->get_sizer(), 0, wxEXPAND | wxTOP, 0);
 
-    auto *sizer = new wxBoxSizer(wxVERTICAL);
+
+    // byzzh
+    auto* sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(p->scrolled, 1, wxEXPAND);
-    SetSizer(sizer);
+
+    auto* size_top = new wxBoxSizer(wxVERTICAL);
+    size_top->Add(sizer, 1, wxEXPAND);
+
+    if (!wxGetApp().app_config->get("use_classic_mode").empty()) {
+        auto chat_panel = new ChatConfigPanel(this);
+        size_top->Add(chat_panel, 1, wxEXPAND);
+        size_top->Hide(sizer, true);
+    }
+
+    SetSizer(size_top);
+    Layout();
 }
 
 Sidebar::~Sidebar() {}
